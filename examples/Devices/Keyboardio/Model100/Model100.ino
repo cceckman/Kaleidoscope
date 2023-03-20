@@ -57,6 +57,8 @@
 // Support for shared palettes for other plugins, like Colormap below
 #include "Kaleidoscope-LED-Palette-Theme.h"
 
+#include "Kaleidoscope-LEDEffect-DigitalRain.h"
+
 // Support for an LED mode that lets one configure per-layer color maps
 #include "Kaleidoscope-Colormap.h"
 
@@ -68,6 +70,9 @@
 
 // Support for changing the brightness of the LEDs
 #include "Kaleidoscope-LEDBrightnessConfig.h"
+
+// Support for controlling each key's LED
+#include "Kaleidoscope-LEDControlConfig.h"
 
 // Support for Keyboardio's internal keyboard testing mode
 #include "Kaleidoscope-HardwareTestMode.h"
@@ -497,6 +502,8 @@ KALEIDOSCOPE_INIT_PLUGINS(
   // Enables controlling (and saving) the brightness of the LEDs via Focus.
   LEDBrightnessConfig,
 
+  LEDControlConfig,
+
   // ----------------------------------------------------------------------
   // Keystroke-handling plugins
 
@@ -584,6 +591,8 @@ KALEIDOSCOPE_INIT_PLUGINS(
   // The LED Palette Theme plugin provides a shared palette for other plugins,
   // like Colormap below
   LEDPaletteTheme,
+
+  LEDDigitalRainEffect,
 
   // The Colormap effect makes it possible to set up per-layer colormaps
   ColormapEffect,
