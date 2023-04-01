@@ -47,22 +47,37 @@ EventHandlerResult LEDControlConfig::onSetup() {
 }
 
 EventHandlerResult LEDControlConfig::onFocusEvent(const char *command) {
-  const char *cmd = PSTR("led.control");
+  const char *cmd = PSTR("led.at");
 
   if (::Focus.handleHelp(command, cmd))
     return EventHandlerResult::OK;
-
-  if (strcmp_P(command, cmd) != 0)
+  // looks like this checks whether part of the string matches "led.at"
+  // Is splitting on spaces magically done for us somewhere else?
+  if (strcmp_P(command, cmd) != 0) {
+    uint8_t idx;
+    // this is transcribed from
+    // https://github.com/spite-driven-development/Kaleidoscope/blob/feature%2FLEDControlConfig-plugin/src/kaleidoscope/plugin/LEDControl.cpp#L257
+    ::Focus.read(idx);
+    if (::Focus.isEOL()) {
+      cRGB c = ::LEDControl.getCrgbAt(idx);
+      ::Focus.send(c);
+    } else {
+      cRGB c;
+      ::Focus.read(c);
+      ::LEDControl.setCrgbAt(idx,c);
+    }
     return EventHandlerResult::OK;
-
-  if (::Focus.isEOL()) {
-    ::Focus.send(settings_.brightness);
-  } else {
-    ::Focus.read(settings_.brightness);
-    ::LEDControl.set_all_leds_to(255 - settings_.brightness,0,settings_.brightness);
-    Runtime.storage().put(settings_base_, settings_);
-    Runtime.storage().commit();
   }
+
+  // do we need to save anything to Runtime.storage() ? Dunno how!
+  // if (::Focus.isEOL()) {
+  //   ::Focus.send(settings_.brightness);
+  // } else {
+  //   ::Focus.read(settings_.brightness);
+  //   ::LEDControl.set_all_leds_to(255 - settings_.brightness,0,settings_.brightness);
+  //   Runtime.storage().put(settings_base_, settings_);
+  //   Runtime.storage().commit();
+  // }
 
   return EventHandlerResult::EVENT_CONSUMED;
 }
