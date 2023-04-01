@@ -74,6 +74,9 @@
 // Support for controlling each key's LED
 #include "Kaleidoscope-LEDControlConfig.h"
 
+// Support for an LED mode that turns your keyboard into a Bloom filter
+#include "Kaleidoscope-LEDBloom.h"
+
 // Support for Keyboardio's internal keyboard testing mode
 #include "Kaleidoscope-HardwareTestMode.h"
 
@@ -503,6 +506,8 @@ KALEIDOSCOPE_INIT_PLUGINS(
   LEDBrightnessConfig,
 
   LEDControlConfig,
+
+  LEDBloom,
 
   // ----------------------------------------------------------------------
   // Keystroke-handling plugins
