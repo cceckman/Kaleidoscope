@@ -48,36 +48,31 @@ EventHandlerResult LEDControlConfig::onSetup() {
 
 EventHandlerResult LEDControlConfig::onFocusEvent(const char *command) {
   const char *cmd = PSTR("led.at");
-
   if (::Focus.handleHelp(command, cmd))
     return EventHandlerResult::OK;
   // looks like this checks whether part of the string matches "led.at"
   // Is splitting on spaces magically done for us somewhere else?
-  if (strcmp_P(command, cmd) != 0) {
-    uint8_t idx;
-    // this is transcribed from
-    // https://github.com/spite-driven-development/Kaleidoscope/blob/feature%2FLEDControlConfig-plugin/src/kaleidoscope/plugin/LEDControl.cpp#L257
-    ::Focus.read(idx);
-    if (::Focus.isEOL()) {
-      cRGB c = ::LEDControl.getCrgbAt(idx);
-      ::Focus.send(c);
-    } else {
-      cRGB c;
-      ::Focus.read(c);
-      ::LEDControl.setCrgbAt(idx,c);
-    }
+  if (strcmp_P(command, cmd) != 0)
     return EventHandlerResult::OK;
-  }
 
-  // do we need to save anything to Runtime.storage() ? Dunno how!
-  // if (::Focus.isEOL()) {
-  //   ::Focus.send(settings_.brightness);
-  // } else {
-  //   ::Focus.read(settings_.brightness);
-  //   ::LEDControl.set_all_leds_to(255 - settings_.brightness,0,settings_.brightness);
-  //   Runtime.storage().put(settings_base_, settings_);
-  //   Runtime.storage().commit();
-  // }
+  // allocate space for the index
+  uint8_t idx;
+  // read the value of the index
+  ::Focus.read(idx);
+  // if that's all, return the value at that index
+  if (::Focus.isEOL()) {
+    cRGB c = ::LEDControl.getCrgbAt(idx);
+    ::Focus.send(c.r);
+    ::Focus.send(c.g);
+    ::Focus.send(c.b);
+  } else { // if there's more to the line
+    // now we read the cRGB to set
+    cRGB c;
+    // this works on led_mode.default 14 only so far?
+    // focus-send led.at 10 250 250 250
+    ::Focus.read(c);
+    ::LEDControl.setCrgbAt(idx,c);
+  }
 
   return EventHandlerResult::EVENT_CONSUMED;
 }
